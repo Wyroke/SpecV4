@@ -5419,7 +5419,7 @@ run(function()
 				end
 				task.wait(Delay.Value)
 			end
-			bedwars.Client:GetNamespace('Inventory'):Get('SetObservedChest'):SendToServer(chest.Value)
+			bedwars.Client:GetNamespace('Inventory'):Get('SetObservedChest'):SendToServer(chest.ChestFolderValue.Value)
 		end
 	end
 
