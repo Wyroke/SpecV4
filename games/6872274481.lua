@@ -15008,7 +15008,6 @@ if getgenv().TestMode then
 									end
 								end
 							end
-						end
 					end
 					task.wait(Delay.Value / 1000)
 					until not AutoShoot.Enabled
