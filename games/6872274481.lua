@@ -1862,11 +1862,11 @@ run(function()
 					end
 				end)
 
-				oldGetMouseInfo = oldGetMouseInfo or BlockSelector.getMouseInfo
+				oldGetMouseInfo = oldGetMouseInfo or bedwars.BlockSelector.getMouseInfo
 
 				bedwars.CombatConstant.RAYCAST_SWORD_CHARACTER_DISTANCE = Attack.Value + 2
 
-				BlockSelector.getMouseInfo = function(self, mode, options)
+				bedwars.BlockSelector.getMouseInfo = function(self, mode, options)
 					options = options or {}
 					options.range = Place.Value * 3
 					return oldGetMouseInfo(self, mode, options)
@@ -1912,7 +1912,7 @@ run(function()
 				end)
 
 				if oldGetMouseInfo then
-					BlockSelector.getMouseInfo = oldGetMouseInfo
+					bedwars.BlockSelector.getMouseInfo = oldGetMouseInfo
 				end
 
 				oldAttackReach = nil
@@ -1943,7 +1943,7 @@ run(function()
 		Default = 18,
 		Function = function(val)
 			if Reach.Enabled then
-				BlockSelector.getMouseInfo = function(self, mode, options)
+				bedwars.BlockSelector.getMouseInfo = function(self, mode, options)
 					options = options or {}
 					options.range = val * 3
 					return oldGetMouseInfo(self, mode, options)
