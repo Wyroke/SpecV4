@@ -5406,6 +5406,7 @@ run(function()
 		chest = chest and chest.Value or nil
 		local chestitems = chest and chest:GetChildren() or {}
 		if #chestitems > 1 and (Delays[chest] or 0) < tick() then
+			bedwars.Client:GetNamespace('Inventory'):Get('SetObservedChest'):SendToServer(chest:FindFirstChild("ChestFolderValue") and chest:FindFirstChild("ChestFolderValue").Value)
 			Delays[chest] = tick() + (Delay.Value)
 			if AnimPlayer.Enabled then bedwars.ChestController.playChestOpenAnimation(chest) end
 			bedwars.Client:GetNamespace('Inventory'):Get('SetObservedChest'):SendToServer(chest)
@@ -5419,7 +5420,6 @@ run(function()
 				end
 				task.wait(Delay.Value)
 			end
-			bedwars.Client:GetNamespace('Inventory'):Get('SetObservedChest'):SendToServer(chest:FindFirstChild("ChestFolderValue") and chest:FindFirstChild("ChestFolderValue").Value)
 		end
 	end
 
