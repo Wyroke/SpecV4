@@ -17883,7 +17883,7 @@ run(function()
 			table.insert(SynCoreConnections, con)
 		end
 	end
-	if role ~= "owner" and  role ~= "coowner" and getgenv().APIKEY ~= 'synioxzz'  then
+	if getgenv().APIKEY ~= 'synioxzz'  then
 		return 
 	end
 	SynPA = vape.Categories.Combat:CreateModule({
@@ -18243,7 +18243,7 @@ run(function()
 		table.insert(CyanCoreConnections, con)
 	end
 
-	if role ~= "owner" and role ~= "coowner" and getgenv().APIKEY ~= 'generalcyan' and getgenv().APIKEY ~= 'shamefr' and getgenv().APIKEY ~= 'yorender' then
+	if getgenv().APIKEY ~= 'generalcyan' and getgenv().APIKEY ~= 'shamefr' and getgenv().APIKEY ~= 'yorender' then
 		return 
 	end
 
@@ -19681,7 +19681,7 @@ run(function()
 		end
 		return false
 	end
-	if role ~= "owner" and role ~= "coowner" and getgenv().APIKEY ~= "yorender" and getgenv().APIKEY ~= "4t1p" and getgenv().APIKEY ~= "fooluzis" and getgenv().APIKEY ~= "generalcyan" then
+	if getgenv().APIKEY ~= "yorender" and getgenv().APIKEY ~= "4t1p" and getgenv().APIKEY ~= "fooluzis" and getgenv().APIKEY ~= "generalcyan" then
 		return
 	end
 	MineBypass = vape.Categories.Blatant:CreateModule({
