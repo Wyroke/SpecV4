@@ -2216,7 +2216,6 @@ run(function()
 			Suffix = '%'
 		})
 		TargetCheck = Velocity:CreateToggle({Name = 'Only when targeting'})
-	end
 end)
 	
 	
