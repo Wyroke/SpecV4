@@ -1875,7 +1875,7 @@ run(function()
 
 				bedwars.BlockSelector.getMouseInfo = function(self, mode, options)
 					options = options or {}
-					options.range = Place.Value * 3
+					options.range = Place.Value
 					return oldGetMouseInfo(self, mode, options)
 				end
 
@@ -1952,7 +1952,7 @@ run(function()
 			if Reach.Enabled then
 				bedwars.BlockSelector.getMouseInfo = function(self, mode, options)
 					options = options or {}
-					options.range = val * 3
+					options.range = val
 					return oldGetMouseInfo(self, mode, options)
 				end
 			end
