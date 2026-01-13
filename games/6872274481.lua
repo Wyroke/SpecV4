@@ -19831,7 +19831,7 @@ run(function()
 					local d = (dims.Position - origin).Magnitude
 					if Range.Value <= d then
 						pos = dims.Position
-						velo = obj.AssemblyLinearVelocity.Magnitude
+						velo = dims.AssemblyLinearVelocity.Magnitude
 					end
 				end
 			end
@@ -19846,7 +19846,7 @@ run(function()
 					local d = (ems.Position - origin).Magnitude
 					if Range.Value <= d then
 						pos = ems.Position
-						velo = obj.AssemblyLinearVelocity.Magnitude
+						velo = ems.AssemblyLinearVelocity.Magnitude
 					end
 				end
 			end
