@@ -19894,7 +19894,7 @@ run(function()
 						if Target.Enabled then
 							if Em.Enabled then
 								local pos,spot = FindEmGen(entitylib.character.RootPart.Position)
-								print(pos.X,spot)
+								print(pos,spot)
 								if pos and CanShoot then
 									CanShoot = false
 									local staff = getItem("spirit_staff")
