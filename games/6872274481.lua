@@ -19931,6 +19931,8 @@ run(function()
 										print(calc)
 										task.wait(1 / Delay.GetRandomValue() + math.random())
 										CanShoot = true
+									else
+										warn('theres no calactiuon')
 									end
 								else
 									task.wait(0.1)
