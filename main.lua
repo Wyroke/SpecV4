@@ -80,7 +80,9 @@ local function finishLoading()
 			if getgenv().password then
 			    teleportScript = 'getgenv().password = "'..escape(getgenv().password)..'"\n'..teleportScript
 			end			
-		
+			if getgenv().APIKEY then
+			    teleportScript = 'getgenv().APIKEY = "'..escape(getgenv().APIKEY)..'"\n'..teleportScript
+			end			
 			vape:Save()
 			queue_on_teleport(teleportScript)
 		end
