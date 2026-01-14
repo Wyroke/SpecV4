@@ -9675,7 +9675,7 @@ run(function()
 									Attacking = true
 									store.KillauraTarget = v
 									if not Swing.Enabled and AnimDelay < tick() and not LegitAura.Enabled then
-										AnimDelay = tick() + (meta.sword.respectAttackSpeedForEffects and meta.sword.attackSpeed or math.max(ChargeTime.Value, 0.11))
+										AnimDelay = tick() + (meta.sword.respectAttackSpeedForEffects and meta.sword.attackSpeed or math.max(ChargeTime.Value, 0))
 										bedwars.SwordController:playSwordEffect(meta, false)
 										if meta.displayName:find(' Scythe') then
 											bedwars.ScytheController:playLocalAnimation()
@@ -9688,19 +9688,19 @@ run(function()
 								end
 
 								if delta.Magnitude > AttackRange.Value then continue end
-								if delta.Magnitude < 14.4 and (tick() - swingCooldown) < math.max(ChargeTime.Value, 0.02) then continue end
+								if delta.Magnitude < 14.4 and (tick() - swingCooldown) < math.max(ChargeTime.Value, -1) then continue end
 
 								local actualRoot = v.Character.PrimaryPart
 								if actualRoot then
 									local dir = CFrame.lookAt(selfpos, actualRoot.Position).LookVector
-									local pos = selfpos + dir * math.max(delta.Magnitude - 14.399, 0)
+									local pos = selfpos + dir * math.max(delta.Magnitude - 14.500, 0)
 									swingCooldown = SyncHit.Enabled and (tick() - HRTR[1]) or tick()
 									bedwars.SwordController.lastAttack = workspace:GetServerTimeNow()
 									store.attackReach = SyncHit.Enabled and ((delta.Magnitude * 100) / 1 / 100 - HRTR[1] - 0.055) or (delta.Magnitude * 100) / 1 / 100
 									store.attackReachUpdate = SyncHit.Enabled and (tick() + 1 - HRTR[2]) or tick() 
 
 
-									if delta.Magnitude < 14.4 and ChargeTime.Value > 0.11 then
+									if delta.Magnitude < 14.4 and ChargeTime.Value > 0 then
 										AnimDelay =  tick()
 									end
 
@@ -9802,7 +9802,7 @@ run(function()
 	HR = Killaura:CreateSlider({
 		Name = 'Hit Registration',
 		Min = 1,
-		Max = 36,
+		Max = 36.5,
 		Default = 36.5,
 		Function = function(val)
 			local function RegMath(sliderValue)
@@ -9828,14 +9828,14 @@ run(function()
 		end
 	})
 
-	local MaxRange = 0
+	local MaxRange = 20
 	local CE = false
 	if role ~= "owner" and role ~= "coowner" and role ~= "admin" and role ~= "friend" and role ~= "premium" and role ~= "user"  then
-		MaxRange = 12
+		MaxRange = 20
 		CE = false
 		SyncHit = {Enabled = false}
 	elseif role == "user" then
-		MaxRange = 16
+		MaxRange = 20
 		CE = false
 		SyncHit = Killaura:CreateToggle({
 			Name = 'Sync Hit-Time',
@@ -9843,7 +9843,7 @@ run(function()
 			Default = false,
 		})
 	elseif role == "premium" then
-		MaxRange = 17
+		MaxRange = 20
 		CE = true
 		SyncHit = Killaura:CreateToggle({
 			Name = 'Sync Hit-Time',
@@ -9859,7 +9859,7 @@ run(function()
 			Default = false,
 		})
 	else
-		MaxRange = 12
+		MaxRange = 20
 		SyncHit = {Enabled = false}
 	end
 
@@ -9868,7 +9868,7 @@ run(function()
 		Min = 1,
 		Edit = CE,
 		Max = MaxRange,
-		Default = 18,
+		Default = 23,
 		Suffix = function(val)
 			return val == 1 and 'stud' or 'studs'
 		end
@@ -9878,7 +9878,7 @@ run(function()
 		Min = 1,
 		Max = MaxRange,
 		Edit = CE,
-		Default = 18,
+		Default = 23,
 		Suffix = function(val)
 			return val == 1 and 'stud' or 'studs'
 		end
@@ -9899,15 +9899,15 @@ run(function()
 	UpdateRate = Killaura:CreateSlider({
 		Name = 'Update rate',
 		Min = 1,
-		Max = 360,
-		Default = 60,
+		Max = 390,
+		Default = 390,
 		Suffix = 'hz'
 	})
 	MaxTargets = Killaura:CreateSlider({
 		Name = 'Max targets',
 		Min = 1,
 		Max = 8,
-		Default = 5
+		Default = 8
 	})
 	Sort = Killaura:CreateDropdown({
 		Name = 'Target Mode',
