@@ -1,4 +1,1 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/soryed/ReVapeForRoblox/main/NewMainScript.lua", true))({
-    username = "", -- username here
-    password = "" -- password here
-})
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Wyroke/SHIZNISJOSJOSJO/main/NewMainScript.lua", true))({
