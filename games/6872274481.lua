@@ -9688,7 +9688,7 @@ run(function()
 								end
 
 								if delta.Magnitude > AttackRange.Value then continue end
-								if delta.Magnitude < 14.4 and (tick() - swingCooldown) < math.max(ChargeTime.Value, -1) then continue end
+								if delta.Magnitude < 14.4 and (tick() - swingCooldown) < math.max(ChargeTime.Value, 0) then continue end
 
 								local actualRoot = v.Character.PrimaryPart
 								if actualRoot then
@@ -9700,12 +9700,12 @@ run(function()
 									store.attackReachUpdate = SyncHit.Enabled and (tick() + 1 - HRTR[2]) or tick() 
 
 
-									if delta.Magnitude < 14.4 and ChargeTime.Value > 0 then
+									if delta.Magnitude < 14.5 and ChargeTime.Value > 0 then
 										AnimDelay =  tick()
 									end
 
-									local Q = 0.5
-									if SyncHit.Enabled  then Q = 0.35 else Q = 0.5 end
+									local Q = 0
+									if SyncHit.Enabled  then Q = 0 else Q = 0 end
 										if isAde then
 													AttackRemote:FireServer({
 														weapon = sword.tool,
@@ -9756,9 +9756,9 @@ run(function()
 					end
 					local tme = 0
 					if SyncHit.Enabled then
-						tme = 0.095
+						tme = 0
 					else
-						tme = -0.195
+						tme = 0
 					end
 					task.wait(1 / UpdateRate.Value - (tme))
 				until not Killaura.Enabled
