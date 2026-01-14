@@ -32,8 +32,8 @@ local function TTD()
 	            delfile('ReVape/profiles/commit.txt')
 			else
 				StarterGui:SetCore('SendNotification', {
-				    Title = 'Onyx',
-				    Text = 'Issue reinstalling Onyx! dm "20mop" on discord!',
+				    Title = 'SpecV4',
+				    Text = 'Dm 7ykt on discord!',
 				    Duration = 20
 				})
 	        end
@@ -55,14 +55,14 @@ if ARGS.Refresh then
 	task.wait(0.5)
     if not isfolder('ReVape/games') then
 		StarterGui:SetCore('SendNotification', {
-			Title = 'Onyx',
-			Text = 'Successfully reinstalling Onyx!!',
+			Title = 'SpecV4',
+			Text = 'Successfully reinstalling SpecV4!!',
 			Duration = 12
 		})
     else
 		StarterGui:SetCore('SendNotification', {
-			Title = 'Onyx',
-			Text = 'Issue reinstalling Onyx! dm "20mop" on discord!',
+			Title = 'SpecV4',
+			Text = 'Issue reinstalling SpecV4! dm "7ykt" on discord!',
 			Duration = 20
 		})
 	end
@@ -80,8 +80,8 @@ if ARGS.ForceRefresh then
 		})
     else
 		StarterGui:SetCore('SendNotification', {
-			Title = 'Onyx',
-			Text = 'Issue force deleting Onyx! dm "20mop" on discord!',
+			Title = 'SpecV4',
+			Text = 'Issue force deleting SpecV4! dm "7ykt" on discord!',
 			Duration = 20
 		})
 	end
@@ -109,7 +109,7 @@ local tweenService = cloneref(game:GetService('TweenService'))
 local function downloadFile(path, func)
 	if not isfile(path) then
 		local suc, res = pcall(function()
-			return game:HttpGet('https://raw.githubusercontent.com/Synioxzz/SynV4/'..readfile('ReVape/profiles/commit.txt')..'/'..select(1, path:gsub('ReVape/', '')), true)
+			return game:HttpGet('https://raw.githubusercontent.com/Wyroke/SpecV4/'..readfile('ReVape/profiles/commit.txt')..'/'..select(1, path:gsub('ReVape/', '')), true)
 		end)
 		if not suc or res == '404: Not Found' then
 			error(res)
@@ -159,7 +159,7 @@ end
 
 if not shared.VapeDeveloper then
 	local _, subbed = pcall(function() 
-		return game:HttpGet('https://github.com/Synioxzz/SynV4') 
+		return game:HttpGet('https://github.com/Wyroke/SpecV4') 
 	end)
 	local commit = subbed:find('currentOid')
 	commit = commit and subbed:sub(commit + 13, commit + 52) or nil
