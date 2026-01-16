@@ -19453,9 +19453,6 @@ run(function()
 	local Range
 	local Delay
 	local Angle
-	local tip = ''
-																																																																																																																																																																																																																																																																
-	end
 	local function kitCollection(id, func, range, angle,d)
 		local objs = type(id) == 'table' and id or collection(id, BetterWarden)
 		repeat
