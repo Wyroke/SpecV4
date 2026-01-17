@@ -2805,36 +2805,113 @@ run(function()
 	local TargetPart
 	local Targets
 	local FOV
-	local OtherProjectiles																												
-	local Blacklist																												
+	local Range
+	local OtherProjectiles
+	local Blacklist
+	local TargetVisualiser
+	
 	local rayCheck = RaycastParams.new()
 	rayCheck.FilterType = Enum.RaycastFilterType.Include
-	rayCheck.FilterDescendantsInstances = {workspace:FindFirstChild('Map')}
+	rayCheck.FilterDescendantsInstances = {workspace:FindFirstChild('Map') or workspace}
 	local old
 	
-	local ProjectileAimbot = vape.Categories.Combat:CreateModule({
-		Name = 'ProjectileAimbot',
+	local selectedTarget = nil
+	local targetOutline = nil
+	local hovering = false
+	local CoreConnections = {}
+	
+	local UserInputService = game:GetService("UserInputService")
+	local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+
+	local function updateOutline(target)
+		if targetOutline then
+			targetOutline:Destroy()
+			targetOutline = nil
+		end
+		if target and TargetVisualiser.Enabled then
+			targetOutline = Instance.new("Highlight")
+			targetOutline.FillTransparency = 1
+			targetOutline.OutlineColor = Color3.fromRGB(255, 0, 0)
+			targetOutline.OutlineTransparency = 0
+			targetOutline.Adornee = target.Character
+			targetOutline.Parent = target.Character
+		end
+	end
+
+	local function handlePlayerSelection()
+		local mouse = lplr:GetMouse()
+		local function selectTarget(target)
+			if not target then return end
+			if target and target.Parent then
+				local plr = playersService:GetPlayerFromCharacter(target.Parent)
+				if plr then
+					if selectedTarget == plr then
+						selectedTarget = nil
+						updateOutline(nil)
+					else
+						selectedTarget = plr
+						updateOutline(plr)
+					end
+				end
+			end
+		end
+		
+		local con
+		if isMobile then
+			con = UserInputService.TouchTapInWorld:Connect(function(touchPos)
+				if not hovering then updateOutline(nil); return end
+				if not ProjectileAimbot.Enabled then pcall(function() con:Disconnect() end); updateOutline(nil); return end
+				local ray = workspace.CurrentCamera:ScreenPointToRay(touchPos.X, touchPos.Y)
+				local result = workspace:Raycast(ray.Origin, ray.Direction * 1000)
+				if result and result.Instance then
+					selectTarget(result.Instance)
+				end
+			end)
+			table.insert(CoreConnections, con)
+		end
+	end
+	
+	local ProjectileAimbot = vape.Categories.Blatant:CreateModule({
+		Name = 'VxpePA',
 		Function = function(callback)
 			if callback then
+				handlePlayerSelection()
+				
 				old = bedwars.ProjectileController.calculateImportantLaunchValues
 				bedwars.ProjectileController.calculateImportantLaunchValues = function(...)
+					hovering = true
 					local self, projmeta, worldmeta, origin, shootpos = ...
-					local plr = entitylib.EntityMouse({
-						Part = 'RootPart',
-						Range = FOV.Value,
-						Players = Targets.Players.Enabled,
-						NPCs = Targets.NPCs.Enabled,
-						Wallcheck = Targets.Walls.Enabled,
-						Origin = entitylib.isAlive and (shootpos or entitylib.character.RootPart.Position) or Vector3.zero
-					})
+					local originPos = entitylib.isAlive and (shootpos or entitylib.character.RootPart.Position) or Vector3.zero
+					
+					local plr
+					if selectedTarget and selectedTarget.Character and (selectedTarget.Character.PrimaryPart.Position - originPos).Magnitude <= Range.Value then
+						plr = selectedTarget
+					else
+						plr = entitylib.EntityMouse({
+							Part = TargetPart.Value,
+							Range = FOV.Value,
+							Players = Targets.Players.Enabled,
+							NPCs = Targets.NPCs.Enabled,
+							Wallcheck = Targets.Walls.Enabled,
+							Origin = originPos
+						})
+					end
+					updateOutline(plr)
 	
-					if plr then
+					if plr and plr.Character and plr[TargetPart.Value] and (plr[TargetPart.Value].Position - originPos).Magnitude <= Range.Value then
 						local pos = shootpos or self:getLaunchPosition(origin)
 						if not pos then
+							hovering = false
 							return old(...)
 						end
 	
 						if (not OtherProjectiles.Enabled) and not projmeta.projectile:find('arrow') then
+							hovering = false
+							return old(...)
+						end
+
+						if table.find(Blacklist.ListEnabled, projmeta.projectile) then
+							hovering = false
 							return old(...)
 						end
 	
@@ -2853,19 +2930,49 @@ run(function()
 						if plr.Character.PrimaryPart:FindFirstChild('rbxassetid://8200754399') then
 							playerGravity = 6
 						end
-	
-						if plr.Player:GetAttribute('IsOwlTarget') then
+
+						if plr.Player and plr.Player:GetAttribute('IsOwlTarget') then
 							for _, owl in collectionService:GetTagged('Owl') do
 								if owl:GetAttribute('Target') == plr.Player.UserId and owl:GetAttribute('Status') == 2 then
 									playerGravity = 0
+									break
 								end
+							end
+						end
+
+						if store.hand and store.hand.tool then
+							if store.hand.tool.Name:find("spellbook") then
+								local targetPos = plr.RootPart.Position
+								local selfPos = lplr.Character.PrimaryPart.Position
+								local expectedTime = (selfPos - targetPos).Magnitude / 160
+								targetPos = targetPos + (plr.RootPart.Velocity * expectedTime)
+								return {
+									initialVelocity = (targetPos - selfPos).Unit * 160,
+									positionFrom = offsetpos,
+									deltaT = 2,
+									gravitationalAcceleration = 1,
+									drawDurationSeconds = 5
+								}
+							elseif store.hand.tool.Name:find("chakram") then
+								local targetPos = plr.RootPart.Position
+								local selfPos = lplr.Character.PrimaryPart.Position
+								local expectedTime = (selfPos - targetPos).Magnitude / 80
+								targetPos = targetPos + (plr.RootPart.Velocity * expectedTime)
+								return {
+									initialVelocity = (targetPos - selfPos).Unit * 80,
+									positionFrom = offsetpos,
+									deltaT = 2,
+									gravitationalAcceleration = 1,
+									drawDurationSeconds = 5
+								}
 							end
 						end
 	
 						local newlook = CFrame.new(offsetpos, plr[TargetPart.Value].Position) * CFrame.new(projmeta.projectile == 'owl_projectile' and Vector3.zero or Vector3.new(bedwars.BowConstantsTable.RelX, bedwars.BowConstantsTable.RelY, bedwars.BowConstantsTable.RelZ))
-						local calc = oldpred.SolveTrajectory(newlook.p, projSpeed, gravity, plr[TargetPart.Value].Position, projmeta.projectile == 'telepearl' and Vector3.zero or plr[TargetPart.Value].Velocity, playerGravity, plr.HipHeight, plr.Jumping and 42.6 or nil, rayCheck)
+						local calc = prediction.SolveTrajectory(newlook.p, projSpeed, gravity, plr[TargetPart.Value].Position, projmeta.projectile == 'telepearl' and Vector3.zero or plr[TargetPart.Value].Velocity, playerGravity, plr.HipHeight, plr.Jumping and 42.6 or nil, rayCheck)
 						if calc then
 							targetinfo.Targets[plr] = tick() + 1
+							hovering = false
 							return {
 								initialVelocity = CFrame.new(newlook.Position, calc).LookVector * projSpeed,
 								positionFrom = offsetpos,
@@ -2876,14 +2983,25 @@ run(function()
 						end
 					end
 	
+					hovering = false
 					return old(...)
 				end
 			else
 				bedwars.ProjectileController.calculateImportantLaunchValues = old
+				if targetOutline then
+					targetOutline:Destroy()
+					targetOutline = nil
+				end
+				selectedTarget = nil
+				for i,v in pairs(CoreConnections) do
+					pcall(function() v:Disconnect() end)
+				end
+				table.clear(CoreConnections)
 			end
 		end,
-		Tooltip = 'Silently adjusts your aim towards the enemy'
+		Tooltip = 'Silently adjusts your aim towards the enemy. Click a player to lock onto them (red outline).'
 	})
+	
 	Targets = ProjectileAimbot:CreateTargets({
 		Players = true,
 		Walls = true
@@ -2898,8 +3016,18 @@ run(function()
 		Max = 1000,
 		Default = 1000
 	})
-
-OtherProjectiles = ProjectileAimbot:CreateToggle({
+	Range = ProjectileAimbot:CreateSlider({
+		Name = 'Range',
+		Min = 10,
+		Max = 500,
+		Default = 100,
+		Tooltip = 'Maximum distance for target locking'
+	})
+	TargetVisualiser = ProjectileAimbot:CreateToggle({
+		Name = "Target Visualiser", 
+		Default = true
+	})
+	OtherProjectiles = ProjectileAimbot:CreateToggle({
 		Name = 'Other Projectiles',
 		Default = true,
 		Function = function(call)
