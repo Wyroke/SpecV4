@@ -1559,11 +1559,7 @@ end
 
 run(function()
 	local AimAssist
-	local Priorty
-	local MaxTargets
 	local Targets
-	local Shake
-	local ShakeV
 	local Sort
 	local AimSpeed
 	local Distance
@@ -1571,70 +1567,35 @@ run(function()
 	local StrafeIncrease
 	local KillauraTarget
 	local ClickAim
-	local priorityTarget = nil
-	local shakeTime = 0
+	
 	AimAssist = vape.Categories.Combat:CreateModule({
 		Name = 'AimAssist',
 		Function = function(callback)
 			if callback then
 				AimAssist:Clean(runService.Heartbeat:Connect(function(dt)
-					shakeTime += dt
-					if not entitylib.isAlive then return end
-					if ClickAim.Enabled and (tick() - bedwars.SwordController.lastSwing) >= 0.4 then return end
-					local ent
-					if Priorty.Enabled and priorityTarget then
-						local root = entitylib.character.RootPart
-						local delta = priorityTarget.RootPart.Position - root.Position
-						if priorityTarget.RootPart and priorityTarget.Character	and priorityTarget.Character:FindFirstChild("Humanoid") and priorityTarget.Character.Humanoid.Health > 0 and delta.Magnitude <= Distance.Value then
-							ent = priorityTarget
-						else
-							priorityTarget = nil
-						end
-					end
-					if not ent then
-						ent = not KillauraTarget.Enabled and entitylib.EntityPosition({
+					if entitylib.isAlive and store.hand.toolType == 'sword' and ((not ClickAim.Enabled) or (tick() - bedwars.SwordController.lastSwing) < 0.4) then
+						local ent = not KillauraTarget.Enabled and entitylib.EntityPosition({
 							Range = Distance.Value,
 							Part = 'RootPart',
 							Wallcheck = Targets.Walls.Enabled,
 							Players = Targets.Players.Enabled,
 							NPCs = Targets.NPCs.Enabled,
-							Limit = MaxTargets.Value,
 							Sort = sortmethods[Sort.Value]
 						}) or store.KillauraTarget
-						if Priorty.Enabled and ent then
-							priorityTarget = ent
+	
+						if ent then
+							local delta = (ent.RootPart.Position - entitylib.character.RootPart.Position)
+							local localfacing = entitylib.character.RootPart.CFrame.LookVector * Vector3.new(1, 0, 1)
+							local angle = math.acos(localfacing:Dot((delta * Vector3.new(1, 0, 1)).Unit))
+							if angle >= (math.rad(AngleSlider.Value) / 2) then return end
+							targetinfo.Targets[ent] = tick() + 1
+							gameCamera.CFrame = gameCamera.CFrame:Lerp(CFrame.lookAt(gameCamera.CFrame.p, ent.RootPart.Position), (AimSpeed.Value + (StrafeIncrease.Enabled and (inputService:IsKeyDown(Enum.KeyCode.A) or inputService:IsKeyDown(Enum.KeyCode.D)) and 10 or 0)) * dt)
 						end
 					end
-					if not ent then return end
-					local root = entitylib.character.RootPart
-					local delta = ent.RootPart.Position - root.Position
-					local localfacing = root.CFrame.LookVector * Vector3.new(1, 0, 1)
-					local angle = math.acos(localfacing:Dot((delta * Vector3.new(1, 0, 1)).Unit))
-					if angle >= (math.rad(AngleSlider.Value) / 2) then return end
-					local shakeOffset = Vector3.zero
-					if Shake.Enabled then
-						local freq = (inputService:IsKeyDown(Enum.KeyCode.A) or inputService:IsKeyDown(Enum.KeyCode.D)) and 16 or 10
-						local x = math.sin(shakeTime * freq) * ShakeV.Value
-						shakeOffset = gameCamera.CFrame.RightVector * x * 0.05 * 500
-					end
-					local speed = (AimSpeed.Value + (StrafeIncrease.Enabled and (inputService:IsKeyDown(Enum.KeyCode.A) or inputService:IsKeyDown(Enum.KeyCode.D)) and 10 or 0)) * dt
-					gameCamera.CFrame = gameCamera.CFrame:Lerp(CFrame.lookAt(gameCamera.CFrame.Position,ent.RootPart.Position + shakeOffset),speed)
 				end))
-			else
-				priorityTarget = nil
 			end
 		end,
-		Tooltip = 'Smoothly aims to closest valid target'
-	})
-	Priorty = AimAssist:CreateToggle({
-		Name = 'Priorty',
-		Tooltip = 'Locks onto the first target until invalid'
-	})
-	MaxTargets = AimAssist:CreateSlider({
-		Name = "Max Targets",
-		Min = 1,
-		Max = 8,
-		Default = 5
+		Tooltip = 'Smoothly aims to closest valid target with sword'
 	})
 	Targets = AimAssist:CreateTargets({
 		Players = true,
@@ -1654,14 +1615,14 @@ run(function()
 		Name = 'Aim Speed',
 		Min = 1,
 		Max = 20,
-		Default = getgenv().Closet and 4 or 6
+		Default = 6
 	})
 	Distance = AimAssist:CreateSlider({
 		Name = 'Distance',
 		Min = 1,
 		Max = 30,
 		Default = 30,
-		Suffix = function(val)
+		Suffx = function(val)
 			return val == 1 and 'stud' or 'studs'
 		end
 	})
@@ -1675,30 +1636,11 @@ run(function()
 		Name = 'Click Aim',
 		Default = true
 	})
-	Shake = AimAssist:CreateToggle({
-		Name = 'Shake',
-		Default = false,
-		Function = function(callback)
-			ShakeV.Object.Visible = callback
-		end
-	})
-	ShakeV = AimAssist:CreateSlider({
-		Name = "Shake Power",
-		Min = 0,
-		Max = 1,
-		Default = 0.5,
-		Visible = false,
-		Decimal = 100
-	})
 	KillauraTarget = AimAssist:CreateToggle({
 		Name = 'Use killaura target'
 	})
-	StrafeIncrease = AimAssist:CreateToggle({
-		Name = 'Strafe increase'
-	})
+	StrafeIncrease = AimAssist:CreateToggle({Name = 'Strafe increase'})
 end)
-
-
 	
 run(function()
 	local old
