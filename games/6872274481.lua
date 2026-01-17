@@ -2800,6 +2800,7 @@ run(function()
 		Tooltip = 'Prevents slowing down when using items.'
 	})
 end)
+																										
 	run(function()
 	local SilentAim = {Enabled = true}
 	local TargetPart
@@ -2944,7 +2945,7 @@ end)
 		Default = {'telepearl'}
 	})
 end)
-																												
+	
 run(function()
 	local ProjectileAura
 	local Targets
@@ -3059,8 +3060,6 @@ run(function()
 		end
 	})
 end)
-	
-
 	
 run(function()
 	local BedESP
